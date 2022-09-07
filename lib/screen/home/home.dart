@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:client/helpers/headers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class HomePage extends StatefulWidget {
   static const routeName = homePageRoute;
@@ -13,18 +16,83 @@ class HomePage extends StatefulWidget {
 
 
 class _HomePageState extends State<HomePage> {
-  bool onTask = false;
+  bool onTask = true;
   bool onDuty = true;
+
+Completer<GoogleMapController> _controller = Completer();
+
+  static const LatLng _center = const LatLng(45.521563, -122.677433);
+
+  final Set<Marker> _markers = {};
+  final List<dynamic> _markersData = [
+    {
+      "lat": 45.521563,
+      "lng": -122.677433,
+      "title" : "Aravind S",
+      "type" : "Emi"
+    },
+  ];
+
+  LatLng _lastMapPosition = _center;
+
+  MapType _currentMapType = MapType.normal;
+
+  void _onMapTypeButtonPressed() {
+    setState(() {
+      _currentMapType = _currentMapType == MapType.normal
+          ? MapType.satellite
+          : MapType.normal;
+    });
+  }
+
+  void _onCameraMove(CameraPosition position) {
+    _lastMapPosition = position.target;
+  }
+
+  void _onMapCreated(GoogleMapController controller) {
+    _controller.complete(controller);
+  }
+  
+  @override
+  void initState() {
+    for (var i = 0; i < _markersData.length; i++) {
+      print("======================");
+      print(_markersData[i]);
+         _markers.add(Marker(
+        // This marker id can be anything that uniquely identifies each marker.
+        markerId: MarkerId(_lastMapPosition.toString()),
+        position: LatLng(_markersData[i]['lat'], _markersData[i]['lng']),
+        infoWindow: InfoWindow(
+          title: _markersData[i]['title'],
+          snippet: _markersData[i]['type'],
+        ),
+        icon: BitmapDescriptor.defaultMarker,
+      ));
+  }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: Stack(
-        children: [
-          buildMap(),
-          dutyStatusBar(onTask: onTask,status: onDuty ),
-          onTask != true ? todayEarnings() : assignedOrder()
-        ],
+    return SafeArea(
+      child: Scaffold(
+        resizeToAvoidBottomInset: true,
+        body: Stack(
+          children: [
+            GoogleMap(
+                onMapCreated: _onMapCreated,
+                initialCameraPosition: CameraPosition(
+                  target: _center,
+                  zoom: 11.0,
+                ),
+                mapType: _currentMapType,
+                markers: _markers,
+                onCameraMove: _onCameraMove,
+              ),
+            //buildMap(),
+            dutyStatusBar(onTask: onTask,status: onDuty ),
+            onTask != true ? todayEarnings() : assignedOrder()
+          ],
+        ),
       ),
     );
   }
@@ -97,9 +165,12 @@ class _HomePageState extends State<HomePage> {
           )
           : Text("Task has been assigned to you",style: mediumTextStyle(context).copyWith(color:Colors.white),),
           Expanded(
-              child: Align(
-                  alignment: Alignment.centerRight,
-                  child: Icon(CupertinoIcons.bell_fill, size: 18,color: onTask == true ? Colors.white : kPrimaryColor,)))
+              child: GestureDetector(
+                onTap : _onMapTypeButtonPressed,
+                child: Align(
+                    alignment: Alignment.centerRight,
+                    child: Icon(CupertinoIcons.map_fill, size: 18,color: onTask == true ? Colors.white : kPrimaryColor,)),
+              ))
         ],
       ),
     );

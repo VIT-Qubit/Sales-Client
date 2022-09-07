@@ -1,5 +1,4 @@
 import 'package:client/helpers/headers.dart';
-import 'package:share_plus/share_plus.dart';
 
 class ReferralCode extends StatefulWidget {
   static const routeName = refferalCodeRouter;
@@ -91,9 +90,10 @@ class _ReferralCodeState extends State<ReferralCode> {
                           RotatedBox(quarterTurns: 1,child:mediumCustomSizedBox(context)),
                          GestureDetector(
                             onTap: ()async {
-                              String share_text = "Share this code : RSAQER to your friends and get discount";
-                              Clipboard.setData(ClipboardData(text: share_text));
-                              await Share.share(share_text);
+                              //TODO SHARE FEATURE
+                              // String share_text = "Share this code : RSAQER to your friends and get discount";
+                              // Clipboard.setData(ClipboardData(text: share_text));
+                              // await Share.share(share_text);
                             },
                            child: Container(
                              height: 35.0,
