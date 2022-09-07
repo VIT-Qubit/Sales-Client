@@ -1,6 +1,6 @@
 export 'package:flutter/material.dart';
 export 'package:flutter/services.dart';
-
+export 'package:client/helpers/headers.dart';
 export 'package:client/constants/customroutes.dart';
 export 'package:client/constants/colors.dart';
 export 'package:client/constants/responsive.dart';

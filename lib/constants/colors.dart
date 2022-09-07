@@ -1,12 +1,15 @@
 import 'package:client/helpers/headers.dart';
 
 //Primary font
-
 const kMuktaRegular = 'MuktaRegular';
 const kMuktaBold = 'MuktaBold';
 const kQuickSandRegular = 'QuickSandRegular';
 const kQuickSandBold = 'QuickSandBold';
-
+const kRobotoBold = 'RobotoBold';
+const kRobotoRegular = 'RobotoRegular';
+const kRobotoLight = 'RobotoLight';
+const kRobotoMedium = 'RobotoMedium';
+const kRobotoThin = 'RobotoThin'; 
 
 //Screen background color
 const kScreenBackground = Colors.white;
@@ -21,7 +24,7 @@ const kSecondaryColor =Color(0xffafcfed);
     //Color(0xffafcfed); 
     //Color(0xffbbe2e5);
     //Color(0xffF3EFFD); 
-const kTertiaryColor = Color(0xff1b94c5);
+const kTertiaryColor = Color(0xffEDF0F4);
 
 const kBorderColor = Color(0xff585858);
 const kMenuColor = Color(0xffF7F8FC);

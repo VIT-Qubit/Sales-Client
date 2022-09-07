@@ -75,7 +75,7 @@ class CommonNavbar extends StatelessWidget {
                           size: isMobile(context) ? 19 : 23,
                         )),
                   RotatedBox(quarterTurns: 1,child: smallCustomSizedBox(context),),
-                  if(title != null) Text(title,style:mediumTextStyle(context))
+                  if(title != null) Text(title,style:largeTextStyle(context,fontFamily: kRobotoBold))
                 ],
               ),
             ),
@@ -94,7 +94,7 @@ class CommonNavbar extends StatelessWidget {
 }
 
 //Cart Navbar Widget with PreferredSize widget
-Widget commonNavbar({required context,required bool isHelp,required bool isBack,required String title,required TextStyle titleStyle,
+defaultNavbar({required context,required bool isHelp,required bool isBack,required String title,required TextStyle titleStyle,
     required bool isElevation}) {
   return PreferredSize(
       child: CommonNavbar(
@@ -105,8 +105,8 @@ Widget commonNavbar({required context,required bool isHelp,required bool isBack,
         titleStyle: titleStyle,
       ),
       preferredSize: Size.fromHeight(isMobile(context)
-          ? 40
+          ? 50
           : largeTablet(context)
-              ? 50
-              : 55));
+              ? 60
+              : 65));
 }

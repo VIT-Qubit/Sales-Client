@@ -43,7 +43,7 @@ void onTabTapped(int index) {
  }
 
   //initializing the current index = 0 : HomePage
-  int _currentIndex = 3;
+  int _currentIndex = 1;
 
   //Current Index with Widget paths
   final List<Widget> _children = [

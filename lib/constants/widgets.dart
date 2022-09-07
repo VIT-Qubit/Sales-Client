@@ -38,25 +38,25 @@ screenPads(context) {
 }
 
 /* -------------- Text Style --------------*/
-largeTextStyle(context) {
+largeTextStyle(context,{String? fontFamily}) {
   return TextStyle(
     color: kBlackTextColor,
-    fontFamily: kMuktaBold,
+    fontFamily: fontFamily ?? kMuktaBold,
     fontSize: isMobile(context) ? 21.0 : 24.0,
   );
 }
 
-mediumLargeTextStyle(context) {
+mediumLargeTextStyle(context,{String? fontFamily}) {
   return TextStyle(
-    fontFamily: kMuktaRegular,
+    fontFamily: fontFamily ?? kMuktaRegular,
     fontSize: isMobile(context) ? 18.0 : 20.0,
     color: kBlackTextColor,
   );
 }
 
-mediumTextStyle(context) {
+mediumTextStyle(context,{String? fontFamily}) {
   return TextStyle(
-    fontFamily: kMuktaRegular,
+    fontFamily: fontFamily ?? kMuktaRegular,
     fontSize: isMobile(context) ? 15.0 : 17.0,
     color: kBlackTextColor,
   );
@@ -918,6 +918,57 @@ Widget customVerticalIconTitle({required context,required String subtitle,requir
                 );
 }
 
+Widget containerTitleBar({required BuildContext context,required String title}){
+  var size = sizeMedia(context);
+  return Container(
+    height: isMobile(context) ? 55 : 70,
+    width: size.width,
+    padding: screenPads(context),
+    decoration: BoxDecoration(
+      color: kTertiaryColor,
+    ),
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.end,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+         Text(
+                  title,
+                  style: titleStyle(context),
+                  softWrap: true,
+                ),
+      ],
+    ),
+  );
+}
+
+
+Widget  underlineTitleText({context,required String text,required Color textColor,required Color lineColor}) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    mainAxisAlignment: MainAxisAlignment.start,
+    children: [
+      Text(
+        text,
+        style: TextStyle(
+          fontFamily: kRobotoMedium,
+          fontSize: isMobile(context) ? 15 : 17,
+          color: textColor,
+        ),
+      ),
+      SizedBox(
+        height: 4,
+      ),
+      Container(
+        height: 2,
+        width: isMobile(context) ? 35 : 45,
+        decoration: BoxDecoration(
+          color: lineColor,
+          borderRadius: BorderRadius.circular(20),
+        ),
+      )
+    ],
+  );
+}
 
 /*
 Widget bookingsCard({BuildContext context,String refid,String cat,String startDate,String type,Function() onTap}){

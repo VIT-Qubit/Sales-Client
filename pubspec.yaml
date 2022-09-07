@@ -38,6 +38,7 @@ dependencies:
   otp_text_field: ^1.1.3
   flutter_switch: ^0.3.2
   font_awesome_flutter: ^10.1.0
+  step_progress_indicator: ^1.0.2
   # carousel_slider: ^4.0.0
   # font_awesome_flutter: ^9.2.0
   # dio: ^4.0.4
@@ -100,6 +101,25 @@ flutter:
     - family: QuickSandBold
       fonts:
         - asset: assets/fonts/quicksands/Quicksand-Medium.ttf 
+    - family: RobotoBold
+      fonts:
+        - asset: assets/fonts/roboto/RobotoBold.ttf
+
+    - family: RobotoLight
+      fonts:
+        - asset: assets/fonts/roboto/RobotoLight.ttf
+
+    - family: RobotoMedium
+      fonts:
+        - asset: assets/fonts/roboto/RobotoMedium.ttf
+
+    - family: RobotoRegular
+      fonts:
+        - asset: assets/fonts/roboto/RobotoRegular.ttf
+
+    - family: RobotoThin
+      fonts:
+        - asset: assets/fonts/roboto/RobotoThin.ttf
         
   #
   # For details regarding fonts from package dependencies,
