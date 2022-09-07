@@ -2,7 +2,7 @@ import 'package:client/helpers/headers.dart';
 
 class ProfilePage extends StatefulWidget {
   static const routeName =  profilePageRoute;
-  ProfilePage({Key? key}) : super(key: key);
+  const ProfilePage({Key? key}) : super(key: key);
 
   @override
   _ProfilePageState createState() => _ProfilePageState();

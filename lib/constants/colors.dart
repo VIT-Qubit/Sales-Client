@@ -11,6 +11,9 @@ const kRobotoLight = 'RobotoLight';
 const kRobotoMedium = 'RobotoMedium';
 const kRobotoThin = 'RobotoThin'; 
 
+//default img
+const DEFAULT_AVATAR_IMG = 'assets/images/avatar.png';
+
 //Screen background color
 const kScreenBackground = Colors.white;
 // Colors

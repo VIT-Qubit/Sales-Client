@@ -13,7 +13,7 @@ class HomePage extends StatefulWidget {
 
 
 class _HomePageState extends State<HomePage> {
-  bool onTask = true;
+  bool onTask = false;
   bool onDuty = true;
   @override
   Widget build(BuildContext context) {

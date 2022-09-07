@@ -7,3 +7,5 @@ export 'package:client/constants/responsive.dart';
 export 'package:client/constants/widgets.dart';
 export 'package:client/helpers/routenames.dart';
 export 'package:flutter_overlay_loader/flutter_overlay_loader.dart';
+export 'package:client/screen/components/navbar.dart';
+export 'package:client/screen/components/contenttile.dart';

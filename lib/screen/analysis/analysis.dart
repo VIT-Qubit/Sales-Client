@@ -2,7 +2,7 @@ import 'package:client/helpers/headers.dart';
 
 class AnalysisPage extends StatefulWidget {
   static const routeName = analysisPageRoute;
-  AnalysisPage({Key? key}) : super(key: key);
+  const AnalysisPage({Key? key}) : super(key: key);
 
   @override
   _AnalysisPageState createState() => _AnalysisPageState();

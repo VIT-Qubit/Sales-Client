@@ -4,3 +4,4 @@ const String loginPageRoute =  "/loginpage";
 const String profilePageRoute =  "/profilepage";
 const String analysisPageRoute =  "/analysispage";
 const String recordsPageRoute =  "/recordspage";
+const String recordsInDetailsPageRoute =  "/recordsindetailspage";
