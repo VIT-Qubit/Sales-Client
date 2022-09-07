@@ -11,6 +11,8 @@ class RecordsInDetailsPage extends StatefulWidget {
 
 class  RecordsInDetailsPageState extends State <RecordsInDetailsPage> {
  
+  final bool taskBegin = false;
+  final bool taskCompleted = false;
 
   final TextEditingController _reasonController = TextEditingController();
 
@@ -109,82 +111,25 @@ class  RecordsInDetailsPageState extends State <RecordsInDetailsPage> {
                   children: [
                     Text("#12345HSGC",style : mediumLargeTextStyle(context).copyWith(fontFamily : kMuktaBold)),
                     //if(snapshot.data['enablecancel'] == true) 
-                    GestureDetector(
-                      onTap: () => bottomDialog(
-                                        context: context,
-                                        height: 300,
-                                        widget: Container(
-                                          margin: screenPads(context),
-                                          child: ListView(
-                                            // crossAxisAlignment: CrossAxisAlignment.start,
-                                            // mainAxisAlignment: MainAxisAlignment.start,
-                                            children: [
-                                               Text("Please enter a reason to cancel this task",
-                                softWrap: true,
-                                style: mediumTextStyle(context,fontFamily: kMuktaRegular)),
-                                mediumCustomSizedBox(context),
-                                Container(
-                        //height: 50,
-                        decoration: BoxDecoration(
-                          color: kLightLavengerGrayColor,
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                        child:TextFormField(
-                controller: _reasonController,
-               keyboardType: TextInputType.text,
-                minLines: 5,
-                maxLines: 7,
-                enableSuggestions: true,
-                enableInteractiveSelection: true,
-                decoration: InputDecoration(
-                  enabled: true,
-                  hintText: 'Your reason',
-                  hintStyle: const TextStyle(
-                    color: kGraycolor,
-                    fontSize: 13.0,
+                    if(taskCompleted == false)GestureDetector(
+                      onTap: () =>showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                   return taskBegin == false ? singleButtonCustomDialog(
+                      title: "Woah! Good to go", context: context,
+                      onPressed: (){
+                        Navigator.pop(context);
+                        // Navigator.pop(context);
+                      }, btnText: "Close", circularAvatarColor: kSeaGreenColor, icon: Icons.group)
+                      :singleButtonCustomDialog(
+                      title: "Excellent! Task completed", context: context,
+                      onPressed: (){
+                        Navigator.pop(context);
+                        // Navigator.pop(context);
+                      }, btnText: "Close", circularAvatarColor: kSeaGreenColor, icon: Icons.done); 
+                  }
                   ),
-                  filled: true,
-                  fillColor: Colors.white,
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(color: kGraycolor),
-                    borderRadius: BorderRadius.circular(5.0),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(5.0),
-                    borderSide: const BorderSide(color: kGraycolor),
-                  ),
-                ),
-                // maxLength: 10,
-                ),  
-                        ),
-                      mediumCustomSizedBox(context),
-                                              GestureDetector(
-                                                onTap: () {
-                                                  // if(_reasonController.text.isNotEmpty){
-                                                  //   overlayLoader(context);
-                                                  //   putCancelAppointmentBooking(reason: _reasonController.text.trim());
-                                                    
-                                                  // }else{
-                                                  //   ScaffoldMessenger.of(context).showSnackBar(customsnackErrorBar(context, "Please enter a valid reason to cancel this appointment"));
-                                                  // }
-                                                },
-                                                child: Container(
-                                                  height: 35, 
-                                                  margin:EdgeInsets.symmetric(horizontal: kDefaultScreenPaddingHorizontal(context) * 2,vertical: 5),
-                                                  decoration: BoxDecoration(
-                                                    color : kPinkRedishColor,
-                                                    borderRadius: BorderRadius.circular(3),
-                                                  ),
-                                                  child: Center(
-                                                    child:  Text("Send Cancel Request".toUpperCase(),style: mediumTextStyle(context).copyWith(color:Colors.white))
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                      child: Text("CANCEL",style : mediumLargeTextStyle(context).copyWith(fontFamily : kMuktaBold,color:kPinkRedishColor))),
+                      child: Text(taskBegin == false ? "Start Consultation" : "End Consultation",style : mediumLargeTextStyle(context,fontFamily : kMuktaBold).copyWith(color:taskBegin == false ? kGreenColor : kSteelBlue))),
                  ],
                 ),
                 smallCustomSizedBox(context),
@@ -433,6 +378,101 @@ class  RecordsInDetailsPageState extends State <RecordsInDetailsPage> {
                 ),              
                 kSmallDivider(context),
                 measuresTakenList(context: context,measuresList: _measureList,),
+                mediumCustomSizedBox(context),
+                kSmallDivider(context),
+                //Add cancel button here
+                GestureDetector(
+                  onTap: () => bottomDialog(
+                                        context: context,
+                                        height: 300,
+                                        widget: Container(
+                                          margin: screenPads(context),
+                                          child: ListView(
+                                            // crossAxisAlignment: CrossAxisAlignment.start,
+                                            // mainAxisAlignment: MainAxisAlignment.start,
+                                            children: [
+                                               Text("Please enter a reason to cancel this task",
+                                softWrap: true,
+                                style: mediumTextStyle(context,fontFamily: kMuktaRegular)),
+                                mediumCustomSizedBox(context),
+                                Container(
+                        //height: 50,
+                        decoration: BoxDecoration(
+                          color: kLightLavengerGrayColor,
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        child:TextFormField(
+                controller: _reasonController,
+               keyboardType: TextInputType.text,
+                minLines: 5,
+                maxLines: 7,
+                enableSuggestions: true,
+                enableInteractiveSelection: true,
+                decoration: InputDecoration(
+                  enabled: true,
+                  hintText: 'Your reason',
+                  hintStyle: const TextStyle(
+                    color: kGraycolor,
+                    fontSize: 13.0,
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(color: kGraycolor),
+                    borderRadius: BorderRadius.circular(5.0),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(5.0),
+                    borderSide: const BorderSide(color: kGraycolor),
+                  ),
+                ),
+                // maxLength: 10,
+                ),  
+                        ),
+                      mediumCustomSizedBox(context),
+                                              GestureDetector(
+                                                onTap: () {
+                                                  // if(_reasonController.text.isNotEmpty){
+                                                  //   overlayLoader(context);
+                                                  //   putCancelAppointmentBooking(reason: _reasonController.text.trim());
+                                                    
+                                                  // }else{
+                                                  //   ScaffoldMessenger.of(context).showSnackBar(customsnackErrorBar(context, "Please enter a valid reason to cancel this appointment"));
+                                                  // }
+                                                },
+                                                child: Container(
+                                                  height: 35, 
+                                                  margin:EdgeInsets.symmetric(horizontal: kDefaultScreenPaddingHorizontal(context) * 2,vertical: 5),
+                                                  decoration: BoxDecoration(
+                                                    color : kPinkRedishColor,
+                                                    borderRadius: BorderRadius.circular(3),
+                                                  ),
+                                                  child: Center(
+                                                    child:  Text("Send Cancel Request".toUpperCase(),style: mediumTextStyle(context).copyWith(color:Colors.white))
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                  child: Container(
+                    height: 40,
+                                       margin: EdgeInsets.symmetric(
+                        horizontal: kDefaultScreenPaddingHorizontal(context),
+                        vertical: kDefaultScreenPaddingVertical(context)),
+                    decoration: BoxDecoration(
+                      color: kRedColor
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text("CANCEL",style:TextStyle(color:Colors.white)),
+                      ],
+                    )
+                  ),
+                ),
                 mediumCustomSizedBox(context),
        ],
             ),

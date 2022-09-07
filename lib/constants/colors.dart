@@ -13,6 +13,7 @@ const kRobotoThin = 'RobotoThin';
 
 //default img
 const DEFAULT_AVATAR_IMG = 'assets/images/avatar.png';
+const REFFERAL_IMG = 'assets/images/refferal.jpg';
 
 //Screen background color
 const kScreenBackground = Colors.white;

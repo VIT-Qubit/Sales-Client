@@ -18,7 +18,7 @@ class _RecordsPageState extends State<RecordsPage> {
       backgroundColor: Colors.white,
       appBar: defaultNavbar(
           context: context,
-          isHelp: true,
+          isHelp: false,
           isBack: false,
           title: "Live Jobs",
           titleStyle: largeTextStyle(context),
@@ -45,7 +45,8 @@ class _RecordsPageState extends State<RecordsPage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              _target(
+                              target(
+                                context: context,
                                   title: "Tasks Available",
                                   subtitle: "Complete all your tasks available for today",
                                   completedtask: "5",
@@ -61,7 +62,7 @@ class _RecordsPageState extends State<RecordsPage> {
                 ),
 
 
-                /// Todays Earning
+                /// Todays 
                 Container(
                   child: Column(
                     children: [
@@ -78,14 +79,14 @@ class _RecordsPageState extends State<RecordsPage> {
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
                                 Expanded(
-                                    child: _cardsBox(
+                                    child: cardsBox(context:context,
                                         title: "Total Task",
                                         subtitle: "10")),
                                 RotatedBox(
                                     quarterTurns: 1,
                                     child: smallCustomSizedBox(context)),
                                 Expanded(
-                                    child: _cardsBox(
+                                    child: cardsBox(context:context,
                                         title: "Completed Task",
                                         subtitle: "8")),
                               ],
@@ -170,83 +171,6 @@ class _RecordsPageState extends State<RecordsPage> {
                   ),
                 ),
 
-              /*
-                ///Weekly Earnings
-                Container(
-                  child: Column(
-                    children: [
-                      containerTitleBar(context: context, title: "My Earnings"),
-                      Container(
-                        padding: screenPads(context),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Text("Choose Date Range",
-                                style: smallTextStyle(context).copyWith(
-                                    color: kPrimaryColor,
-                                    fontWeight: FontWeight.w600)),
-                            smallCustomSizedBox(context),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text("27 May - 4 Jun",
-                                    style: smallTextStyle(context)
-                                        .copyWith(color: kDarkSlateGray)),
-                                Icon(Icons.date_range_outlined,
-                                    color: kDarkSlateGray, size: 18)
-                              ],
-                            ),
-                            smallCustomSizedBox(context),
-                            kSmallDivider(context),
-                            mediumCustomSizedBox(context),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                    child: _cardsBox(
-                                        title: "Trip Earnings",
-                                        subtitle: "${INRSymbol}1200")),
-                                RotatedBox(
-                                    quarterTurns: 1,
-                                    child: smallCustomSizedBox(context)),
-                                Expanded(
-                                    child: _cardsBox(
-                                        title: "Bonus Earnings",
-                                        subtitle: "${INRSymbol}75")),
-                              ],
-                            ),
-                            mediumCustomSizedBox(context),
-                            underlineTitleText(
-                              context: context,
-                              lineColor: kPrimaryColor,
-                              textColor: kPrimaryColor,
-                              text: "Weekly Performance",
-                            ),
-                            smallCustomSizedBox(context),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                    child: _performanceBox(
-                                        title: "Orders", subtitle: "23")),
-                                Expanded(
-                                    child: _performanceBox(
-                                        title: "Trips", subtitle: "20")),
-                                Expanded(
-                                    child: _performanceBox(
-                                        title: "Missed", subtitle: "3")),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                mediumCustomSizedBox(context),
-                */
               
               ],
             ),
@@ -255,9 +179,11 @@ class _RecordsPageState extends State<RecordsPage> {
       ),
     );
   }
+}
 
 
-  Widget _cardsBox({required String title, required String subtitle}) {
+
+  Widget cardsBox({required BuildContext context,required String title, required String subtitle}) {
     double conHeight = smallMobile(context)
         ? 125
         : largeMobile(context)
@@ -277,13 +203,13 @@ class _RecordsPageState extends State<RecordsPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text("$title",
+            Text(title,
                 softWrap: true,
                 textAlign: TextAlign.center,
                 style: mediumLargeTextStyle(context)),
             smallCustomSizedBox(context),
             Text(
-              "$subtitle",
+              subtitle,
               softWrap: true,
               style: TextStyle(
                   color: kIndianRed,
@@ -299,40 +225,10 @@ class _RecordsPageState extends State<RecordsPage> {
     );
   }
 
-  Widget _performanceBox({required String title, required String subtitle}) {
-    return Container(
-      padding: EdgeInsets.all(10),
-      decoration: BoxDecoration(
-          border: Border.all(color: kLavenderGrayColor, width: 1),
-          borderRadius: BorderRadius.circular(2)),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text(
-            "$title",
-            style: mediumTextStyle(context),
-          ),
-          smallCustomSizedBox(context),
-          Container(
-              padding: EdgeInsets.all(2),
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(5),
-                color: kTertiaryColor,
-              ),
-              child: Center(
-                  child: Text(
-                "$subtitle",
-                style: mediumTextStyle(context),
-              ))),
-        ],
-      ),
-    );
-  }
-
-  Widget _target(
-      {required String title,
+  Widget target(
+      {
+      required BuildContext context,  
+      required String title,
       required String subtitle,
       required String totaltask,
       required String completedtask,
@@ -347,12 +243,12 @@ class _RecordsPageState extends State<RecordsPage> {
             context: context,
             lineColor: kPrimaryColor,
             textColor: kPrimaryColor,
-            text: "$title",
+            text: title,
           ),
           smallCustomSizedBox(context),
           Wrap(
             children: [
-              Text("$subtitle",
+              Text(subtitle,
                   style: smallTextStyle(context).copyWith(color: kPrimaryColor))
             ],
           ),
@@ -384,5 +280,3 @@ class _RecordsPageState extends State<RecordsPage> {
     );
   }
   
-
-}

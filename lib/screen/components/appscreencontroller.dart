@@ -43,7 +43,7 @@ void onTabTapped(int index) {
  }
 
   //initializing the current index = 0 : HomePage
-  int _currentIndex = 1;
+  int _currentIndex = 3;
 
   //Current Index with Widget paths
   final List<Widget> _children = [
@@ -82,7 +82,7 @@ void onTabTapped(int index) {
            ),
             BottomNavigationBarItem(
              icon: Icon(Icons.checklist_rounded),
-            label: "Records",
+            label: "Live",
            ),
             BottomNavigationBarItem(
              icon: Icon(Icons.analytics_outlined),

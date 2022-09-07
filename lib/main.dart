@@ -4,6 +4,7 @@ import 'package:client/screen/auth/loginpage.dart';
 import 'package:client/screen/components/appscreencontroller.dart';
 import 'package:client/screen/home/home.dart';
 import 'package:client/screen/profile/profile.dart';
+import 'package:client/screen/profile/referral.dart';
 import 'package:client/screen/records/recordsindetail.dart';
 import 'package:client/screen/records/recordspage.dart';
 import 'package:flutter/material.dart';
@@ -40,6 +41,7 @@ class _MyAppState extends State<MyApp> {
         AnalysisPage.routeName: (context) => const AnalysisPage(),
         RecordsPage.routeName: (context) => const RecordsPage(),
         RecordsInDetailsPage.routeName: (context) => const RecordsInDetailsPage(),
+        ReferralCode.routeName: (context) => const ReferralCode(),
       },
     );
   }
