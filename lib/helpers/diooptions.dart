@@ -1,8 +1,10 @@
 import 'package:client/helpers/headers.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 Dio dio = Dio();
 
+final flutterSecureStorage =  FlutterSecureStorage();
 
 //BaseOptions
 Options dioOptions =  Options(

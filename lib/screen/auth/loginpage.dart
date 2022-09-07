@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:client/apis/authapi.dart';
 import 'package:client/helpers/headers.dart';
 import 'package:otp_text_field/otp_field.dart';
 import 'package:otp_text_field/otp_field_style.dart';
@@ -24,30 +25,31 @@ class _LoginPageState extends State<LoginPage> {
   String _smsCode = "00000";
   String _otpValue = "00000";
 
-  //AuthenticationAPI _authenticationAPI = AuthenticationAPI();
+  final AuthenticationAPI _authenticationAPI = AuthenticationAPI();
   
-  // _postMobileNumber({required String mobileNumber})async{
-  //   return await _authenticationAPI.postLoginUser(context: context, phonenumber: mobileNumber).then((response) {
-  //     if(response == false){
-  //       setState(() {
-  //         wait = false;
-  //         buttonName = "Send";
-  //         start = otpTimeout;
-  //         _timer.cancel();
-  //       });
-  //     }else{
-  //       setState(() {
-  //         _smsCode = response['RESPONSE']['code'];
-  //       });
-  //     }
-  //     Loader.hide();
-  //   });
-  // }
+  
+  _postMobileNumber({required String mobileNumber})async{
+    return await _authenticationAPI.postLoginUser(context: context, phonenumber: mobileNumber).then((response) {
+      if(response == false){
+        setState(() {
+          wait = false;
+          buttonName = "Send";
+          start = otpTimeout;
+          _timer.cancel();
+        });
+      }else{
+        setState(() {
+          _smsCode = response['RESPONSE']['code'];
+        });
+      }
+      Loader.hide();
+    });
+  }
 
 
-  // _postOtpCodeVerification({required String code,required String otp})async{
-  //   return await _authenticationAPI.postOtpVerification(context: context, otp: otp, code: code);
-  // }
+  _postOtpCodeVerification({required String code,required String otp})async{
+    return await _authenticationAPI.postOtpVerification(context: context, otp: otp, code: code);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -146,11 +148,10 @@ class _LoginPageState extends State<LoginPage> {
                 InkWell(
                   onTap: _otpValue == "00000"  ? null : () async{
                     if(_otpValue.length == 5){
-                    // _postOtpCodeVerification(code: _smsCode, otp: _otpValue);
+                    _postOtpCodeVerification(code: _smsCode, otp: _otpValue);
                     }else{
                       ScaffoldMessenger.of(context).showSnackBar(customsnackErrorBar(context, "Please enter valid 5 digit OTP"));
                   }},
-                  //Navigator.push(context, CustomRightPageRoute(page:AppScreenController(),routeName: helppage)),
                   child: Container(
                     height: 60,
                     width: MediaQuery.of(context).size.width - 60,
@@ -159,7 +160,7 @@ class _LoginPageState extends State<LoginPage> {
                         borderRadius: BorderRadius.circular(5)),
                     child: const Center(
                       child: Text(
-                        "Lets Go",
+                        "Login",
                         style: TextStyle(
                             fontSize: 17,
                             color: Colors.white,
@@ -233,8 +234,8 @@ class _LoginPageState extends State<LoginPage> {
                 ? null
                 : () async {
                    if(phoneController.text.length == 10){
-                     //overlayLoader(context);
-                    //_postMobileNumber(mobileNumber: phoneController.text);
+                     overlayLoader(context);
+                    _postMobileNumber(mobileNumber: phoneController.text);
                     setState(() {
                       start = otpTimeout;
                       wait = true;
