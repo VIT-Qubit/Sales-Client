@@ -2,7 +2,12 @@
     package="com.example.client">
    <application
         android:label="client"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"> 
+
+        <!-- TODO: Add your Google Maps API key here -->
+        <meta-data android:name="com.google.android.geo.API_KEY"
+               android:value="AIzaSyD6WP4GR1pebm-QmvuxLzOtC-a9JAo1sEg"/>
+
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

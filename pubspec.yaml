@@ -41,6 +41,7 @@ dependencies:
   step_progress_indicator: ^1.0.2
   timeline_tile: ^2.0.0
   share_plus: ^3.0.4
+  google_maps_flutter: ^2.1.5
   # carousel_slider: ^4.0.0
   # font_awesome_flutter: ^9.2.0
   # dio: ^4.0.4

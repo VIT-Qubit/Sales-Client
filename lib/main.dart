@@ -8,6 +8,7 @@ import 'package:client/screen/profile/referral.dart';
 import 'package:client/screen/records/recordsindetail.dart';
 import 'package:client/screen/records/recordspage.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 
 void main() {
@@ -32,7 +33,7 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         primaryColor: kPrimaryColor,
       ),
-      home: const AppScreenController(),
+      home: const MapsPage(),
       routes: {
         AppScreenController.routeName : (context) =>  const AppScreenController(), // Path :  /appcontroller
         LoginPage.routeName: (context) => const LoginPage(),
@@ -44,5 +45,38 @@ class _MyAppState extends State<MyApp> {
         ReferralCode.routeName: (context) => const ReferralCode(),
       },
     );
+  }
+}
+
+class MapsPage extends StatefulWidget {
+  const MapsPage({ Key? key }) : super(key: key);
+
+  @override
+  State<MapsPage> createState() => _MapsPageState();
+}
+
+class _MapsPageState extends State<MapsPage> {
+    late GoogleMapController mapController;
+
+  final LatLng _center = const LatLng(45.521563, -122.677433);
+
+  void _onMapCreated(GoogleMapController controller) {
+    mapController = controller;
+  }
+  @override
+  Widget build(BuildContext context) {
+    return  Scaffold(
+        appBar: AppBar(
+          title: const Text('Maps Sample App'),
+          backgroundColor: Colors.green[700],
+        ),
+        body: GoogleMap(
+          onMapCreated: _onMapCreated,
+          initialCameraPosition: CameraPosition(
+            target: _center,
+            zoom: 11.0,
+          ),
+        ),
+      );
   }
 }
