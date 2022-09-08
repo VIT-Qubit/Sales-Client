@@ -1,9 +1,13 @@
+import 'package:client/apis/recordsindetailapi.dart';
 import 'package:client/helpers/headers.dart';
 import 'package:timeline_tile/timeline_tile.dart';
 
 class RecordsInDetailsPage extends StatefulWidget {
   static const routeName = recordsInDetailsPageRoute;
- const RecordsInDetailsPage({Key? key}) : super(key: key);
+
+  final String ticket_id;
+
+ const RecordsInDetailsPage({Key? key,required this.ticket_id}) : super(key: key);
 
   @override
    RecordsInDetailsPageState createState() =>  RecordsInDetailsPageState();
@@ -11,6 +15,8 @@ class RecordsInDetailsPage extends StatefulWidget {
 
 class  RecordsInDetailsPageState extends State <RecordsInDetailsPage> {
  
+  RecordsInDetailAPI _inDetailAPI = new RecordsInDetailAPI();
+
   final bool taskBegin = false;
   final bool taskCompleted = false;
 
@@ -40,43 +46,36 @@ class  RecordsInDetailsPageState extends State <RecordsInDetailsPage> {
   @override
     void initState() {
       super.initState();
+      recordsInDetailFuture = getRecordsData();
     }    
 
-  /*
-  Future<void> _getAppointmentDetails() async {
-    return await _appointmentsAPI.getAppointmentIndetail(context: context, appointmentId: widget.appointmentId);
+
+
+startConsultation()async {
+  return await _inDetailAPI.postStatusConsultation(context: context, type: "START", ticket_id: this.widget.ticket_id);
+}
+
+endConsultation()async {
+  return await _inDetailAPI.postStatusConsultation(context: context, type: "END", ticket_id: this.widget.ticket_id);
+}
+
+  getRecordsData() async {
+    return await _inDetailAPI.getIndetailScreen(context: context, ticket_id: this.widget.ticket_id);
   }
 
-  Future<void> _getRefreshScreen() async {
+  Future<void> _getRefreshedScreen() async {
     setState(() {
-      _indetailFuture = _getAppointmentDetails();
+      recordsInDetailFuture = getRecordsData();
     });
-  }
-  
-  putCancelAppointmentBooking({required String reason}) async {
-    return await _appointmentsAPI.putCancelAppointmentBooking(context: context, appointmentId: widget.appointmentId, reason: reason);
   }
 
-  postSubmitQuery({required String title, required String description}) async {
-    return await _raiseticketsAPI.postRaiseIssue(context: context, appointmentId: widget.appointmentId, title: title, description: description).then((res){
-      if(res==true){
-        Loader.hide();
-        Navigator.of(context).pop();
-      }else{
-        Loader.hide();
-      }
-    });
-  }
-  */
 
   @override
   Widget build(BuildContext context) {
     var size = sizeMedia(context);
     return SafeArea(
       child: RefreshIndicator(
-        onRefresh: () async {
-          //await _getRefreshScreen();
-        },
+        onRefresh: _getRefreshedScreen,
         color: kPrimaryColor,
         strokeWidth: 3,
         child: Scaffold(
@@ -88,14 +87,20 @@ class  RecordsInDetailsPageState extends State <RecordsInDetailsPage> {
           title: "",
           titleStyle: largeTextStyle(context),
           isElevation: true),
-          body:SingleChildScrollView(
+          body:
+          FutureBuilder(
+            future: recordsInDetailFuture,
+            builder: (BuildContext context, AsyncSnapshot snapshot){
+              if(snapshot.hasData){
+                print("----------------------------------------------");
+                print(snapshot.data['data']['started'].runtimeType);
+                return SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 kMediumDivider(context),
-                //Appointment Details
                 Container(
                   margin: EdgeInsets.symmetric(
                       horizontal: kDefaultScreenPaddingHorizontal(context),
@@ -109,27 +114,34 @@ class  RecordsInDetailsPageState extends State <RecordsInDetailsPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("#12345HSGC",style : mediumLargeTextStyle(context).copyWith(fontFamily : kMuktaBold)),
+                    Text("#${snapshot.data['data']['id']}",style : mediumLargeTextStyle(context).copyWith(fontFamily : kMuktaBold)),
                     //if(snapshot.data['enablecancel'] == true) 
-                    if(taskCompleted == false)GestureDetector(
+                    if(snapshot.data['data']['completed'] == false)GestureDetector(
                       onTap: () =>showDialog(
                   context: context,
                   builder: (BuildContext context) {
-                   return taskBegin == false ? singleButtonCustomDialog(
+                   return snapshot.data['data']['started'] == false ? singleButtonCustomDialog(
                       title: "Woah! Good to go", context: context,
-                      onPressed: (){
+                      onPressed: ()async{
+                        startConsultation();
                         Navigator.pop(context);
-                        // Navigator.pop(context);
+                        Navigator.pop(context);
                       }, btnText: "Close", circularAvatarColor: kSeaGreenColor, icon: Icons.group)
                       :singleButtonCustomDialog(
                       title: "Excellent! Task completed", context: context,
-                      onPressed: (){
+                      onPressed: ()async{
+                        endConsultation();
                         Navigator.pop(context);
-                        // Navigator.pop(context);
+                        Navigator.pop(context);
                       }, btnText: "Close", circularAvatarColor: kSeaGreenColor, icon: Icons.done); 
                   }
                   ),
-                      child: Text(taskBegin == false ? "Start Consultation" : "End Consultation",style : mediumLargeTextStyle(context,fontFamily : kMuktaBold).copyWith(color:taskBegin == false ? kGreenColor : kSteelBlue))),
+                      child: Text( 
+                        (snapshot.data['data']['completed'] == true) ? "" : (snapshot.data['data']['started'] == true) ? "End Consultation" : "Start Consultation",style : mediumLargeTextStyle(context,fontFamily : kMuktaBold).copyWith(color:taskBegin == false ? kGreenColor : kSteelBlue)
+                        // (snapshot.data['data']['completed'] == false || snapshot.data['data']['completed'] == 'false') 
+                        //             ? ((snapshot.data['data']['started'] == true || snapshot.data['data']['started'] == 'true') 
+                        //             ? "Start Consultation" : "End Consultation" ): "",style : mediumLargeTextStyle(context,fontFamily : kMuktaBold).copyWith(color:taskBegin == false ? kGreenColor : kSteelBlue)
+                                    )),
                  ],
                 ),
                 smallCustomSizedBox(context),
@@ -148,56 +160,72 @@ class  RecordsInDetailsPageState extends State <RecordsInDetailsPage> {
                             height: 1.2, color: kGraycolor, fontFamily: kMuktaBold),
                       ),
                       Text(
-                         "Pending".toUpperCase(),
+                        snapshot.data['data']['completed'] == false ? "Pending".toUpperCase() : "Completed".toUpperCase(),
                         style: mediumTextStyle(context,fontFamily:kMuktaBold)
-                            // .copyWith(
-                            //   color: _appointments['status'] == "Pending" ? kPrimaryColor 
-                            //     : (_appointments['status'] == "Completed") ? kGreenColor 
-                            //     : (_appointments['status'] == "OnGoing") ? kGreenColor
-                            //     : (_appointments['status'] == "Missed") ? kPinkRedishColor
-                            //     : kOrangeColor,
-                            //   ),
+                        
                       ),
                   ],
                 ),
                 mediumCustomSizedBox(context),
-                ListView.builder(
-                                shrinkWrap: true,
-                                physics:const NeverScrollableScrollPhysics(),
-                                itemCount: 3, // _appointments['details'].length,
-                                itemBuilder: (BuildContext context,int i){
-                                    return Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      children: [
-                                    //  _appointments['details'][i]['title'] != 'Location' ? contentDescTile(
-                                    //     context: context,
-                                    //     title: "${_appointments['details'][i]['title']}", subtitle: "${_appointments['details'][i]['subtitle']}")
-                                    //     :
-                                         Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                mainAxisAlignment: MainAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    "Location / Type / Directions",
-                                                    maxLines: 1,
-                                                    overflow: TextOverflow.clip,
-                                                    softWrap: true,
-                                                    style: smallTextStyle(context).copyWith(
-                                                        height: 1.2, color: kGraycolor, fontFamily: kMuktaBold),
-                                                  ),
-                                                  Text(
-                                                    "Open Url",
-                                                    style: mediumTextStyle(context)
-                                                        .copyWith(color: kPrimaryColor,fontFamily:kMuktaBold),
-                                                  ),
-                                                ],
-                                              ),
-                                      mediumCustomSizedBox(context),
-                                      ],
-                                    );
-                                }
-                              ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(
+                        "Customer Name",
+                        maxLines: 1,
+                        overflow: TextOverflow.clip,
+                        softWrap: true,
+                        style: smallTextStyle(context).copyWith(
+                            height: 1.2, color: kGraycolor, fontFamily: kMuktaBold),
+                      ),
+                      Text(
+                        snapshot.data['data']['customer_id']['name'].toString().toUpperCase(),
+                        style: mediumTextStyle(context,fontFamily:kMuktaBold)
+                            
+                      ),
+                  ],
+                ),
+                 mediumCustomSizedBox(context),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(
+                        "Date",
+                        maxLines: 1,
+                        overflow: TextOverflow.clip,
+                        softWrap: true,
+                        style: smallTextStyle(context).copyWith(
+                            height: 1.2, color: kGraycolor, fontFamily: kMuktaBold),
+                      ),
+                      Text(
+                        isEmptyOrNull(snapshot.data['data']['customer_id']['service_date']) ? "08-09-2022" : snapshot.data['data']['customer_id']['service_date'].toString().toUpperCase(),
+                        style: mediumTextStyle(context,fontFamily:kMuktaBold)
+                          
+                      ),
+                  ],
+                ),
+                 mediumCustomSizedBox(context),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(
+                        "Address",
+                        maxLines: 1,
+                        overflow: TextOverflow.clip,
+                        softWrap: true,
+                        style: smallTextStyle(context).copyWith(
+                            height: 1.2, color: kGraycolor, fontFamily: kMuktaBold),
+                      ),
+                      Text(
+                        isEmptyOrNull(snapshot.data['data']['customer_id']['address'])? "No:43,KMR Street,Kovur,Chennai-112" : snapshot.data['data']['customer_id']['address'].toString().toUpperCase(),
+                        style: mediumTextStyle(context,fontFamily:kMuktaBold)
+                          
+                      ),
+                  ],
+                ),
                 smallCustomSizedBox(context),  
                     GestureDetector(
                       onTap: () =>  bottomDialog(
@@ -320,8 +348,8 @@ class  RecordsInDetailsPageState extends State <RecordsInDetailsPage> {
                 ),  
                 kMediumDivider(context),
                 _orderStatus(
-                  isCancelled: true,//,_appointments['timeline']['cancelled'],
-                  timeline: {}, //_timelineData['timeline'], //,_appointments['timeline'],
+                  isCancelled: true,
+                  timeline: snapshot.data['data'], 
                 ),
                 kMediumDivider(context),
                 Container(
@@ -351,7 +379,7 @@ class  RecordsInDetailsPageState extends State <RecordsInDetailsPage> {
                               children: [
                                
                                 Text(
-                        "A.Sundaram",
+                        snapshot.data['data']['customer_id']['name'],
                         maxLines: 1,
                                   overflow: TextOverflow.clip,
                                   softWrap: true,
@@ -359,7 +387,7 @@ class  RecordsInDetailsPageState extends State <RecordsInDetailsPage> {
                             .copyWith(color: Colors.black.withOpacity(0.9),fontFamily:kMuktaBold),
                       ),
                                 Text(
-                                  "8012345678",
+                                  isEmptyOrNull(snapshot.data['data']['worker_id']['phone_number']) ? "9876128729" : snapshot.data['data']['worker_id']['phone_number'].toUpperCase(),
                                   maxLines: 1,
                                   overflow: TextOverflow.clip,
                                   softWrap: true,
@@ -381,7 +409,7 @@ class  RecordsInDetailsPageState extends State <RecordsInDetailsPage> {
                 mediumCustomSizedBox(context),
                 kSmallDivider(context),
                 //Add cancel button here
-                GestureDetector(
+                if(snapshot.data['data']['completed'] == false) GestureDetector(
                   onTap: () => bottomDialog(
                                         context: context,
                                         height: 300,
@@ -432,13 +460,7 @@ class  RecordsInDetailsPageState extends State <RecordsInDetailsPage> {
                       mediumCustomSizedBox(context),
                                               GestureDetector(
                                                 onTap: () {
-                                                  // if(_reasonController.text.isNotEmpty){
-                                                  //   overlayLoader(context);
-                                                  //   putCancelAppointmentBooking(reason: _reasonController.text.trim());
-                                                    
-                                                  // }else{
-                                                  //   ScaffoldMessenger.of(context).showSnackBar(customsnackErrorBar(context, "Please enter a valid reason to cancel this appointment"));
-                                                  // }
+                                                  
                                                 },
                                                 child: Container(
                                                   height: 35, 
@@ -476,14 +498,7 @@ class  RecordsInDetailsPageState extends State <RecordsInDetailsPage> {
                 mediumCustomSizedBox(context),
        ],
             ),
-          ),
-          /* 
-          FutureBuilder(
-            future: _indetailFuture,
-            builder: (BuildContext context, AsyncSnapshot snapshot){
-              if(snapshot.hasData){
-                Map<dynamic, dynamic> _appointments = snapshot.data;
-                return 
+          );
               }else if (snapshot.hasError) {
                     return defaultErrordialog(
                         context: context,
@@ -495,7 +510,7 @@ class  RecordsInDetailsPageState extends State <RecordsInDetailsPage> {
                       height: size.height,
                       child: Center(child: customCircularProgress()));
             },
-          ) */
+          ) 
         ),
       ) ,
     );
@@ -512,8 +527,8 @@ class  RecordsInDetailsPageState extends State <RecordsInDetailsPage> {
           contentDescTile(context: context, subtitle: "Task Timline", title: ""),
           mediumCustomSizedBox(context),
           
-          _stepperWidget(title: "Start Task", time: "10:30am", isCancelled: false, isLast: false, completed: true),
-          _stepperWidget(title: "End Task", time: "", isCancelled: false, isLast: true, completed: false),
+          _stepperWidget(title: "Start Task", time: isEmptyOrNull(timeline['start_time']) ? "10:30 am" : timeline['start_time'].substring(0,8), isCancelled: false, isLast: false, completed: true),
+          _stepperWidget(title: "End Task", time: isEmptyOrNull(timeline['end_time']) ? "-" : timeline['end_time'].substring(0,8), isCancelled: false, isLast: true, completed: timeline['completed']),
 
           // _stepperWidget(isDone: true,isCancelled : false, isProcessing: false, title: "${timeline['step1']['title']}",time: "${timeline['step1']['time']}"),
         //  if(isCancelled == false) _stepperWidget(

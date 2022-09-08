@@ -1,3 +1,5 @@
+import 'package:client/apis/authapi.dart';
+import 'package:client/apis/profileapi.dart';
 import 'package:client/helpers/headers.dart';
 import 'package:client/screen/profile/referral.dart';
 
@@ -10,12 +12,29 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+
+ProfileScreenAPI _profileScreenAPI = new ProfileScreenAPI();
+
+@override initState(){
+  super.initState();
+  profileFuture = getProfileScreenData();
+}
+
+getProfileScreenData() async {
+  return await _profileScreenAPI.getProfileScreen(context: context);
+}
+
   @override
   Widget build(BuildContext context) {
     var size = sizeMedia(context);
     return SafeArea(
       child: Scaffold(
-        body: SingleChildScrollView(
+        body:
+        FutureBuilder(
+            future: profileFuture,
+            builder: (BuildContext context, AsyncSnapshot snapshot){
+              if(snapshot.hasData){
+                return  SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
           child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -33,7 +52,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Text(
-                              "A.Ramaswamy",
+                              snapshot.data['Data']['name'],
                               style: largeTextStyle(context),
                             ),
                             smallCustomSizedBox(context),
@@ -42,7 +61,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
                                 Text(
-                                  "9087654321",
+                                  snapshot.data['Data']['phone_number'],
                                   style: mediumTextStyle(context)
                                       .copyWith(color: kDimGray),
                                 ),
@@ -60,10 +79,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                     child: mediumCustomSizedBox(context)),
                                 Expanded(
                                     child: Text(
-                                      "email@email.com",
-                                  //  isEmptyOrNull(snapshot.data["email"])
-                                  //      ? updateEmail
-                                  //      : snapshot.data["email"],
+                                      snapshot.data['Data']['age'].toString(),
                                   style: mediumTextStyle(context)
                                       .copyWith(color: kDimGray),
                                 ))
@@ -80,7 +96,7 @@ class _ProfilePageState extends State<ProfilePage> {
         
                       ///Profiles
                       profileTiles(
-                          title: "History Orders",
+                          title: "History Tasks",
                           icon: Icons.history,
                           onTap: () {}),
                       
@@ -115,8 +131,8 @@ class _ProfilePageState extends State<ProfilePage> {
                           title: "Logout",
                           icon: Icons.logout,
                           onTap: () {
-                            //ScaffoldMessenger.of(context).showSnackBar(customSnackSuccessBar(context, "You have been logged out"));
-                            //AuthenticationAPI().performLogOut(context);
+                            ScaffoldMessenger.of(context).showSnackBar(customSnackSuccessBar(context, "You have been logged out"));
+                            AuthenticationAPI().performLogOut(context: context, userLogout: true);
                             }
                           ),
         
@@ -145,7 +161,19 @@ class _ProfilePageState extends State<ProfilePage> {
                       )
                     ],
                   ),
-        )
+        );
+              }else if (snapshot.hasError) {
+                    return defaultErrordialog(
+                        context: context,
+                        errorCode: ES_0060,
+                        message: "Something went wrong.Try again Later");
+                  }
+                  return SizedBox(
+                      width: sizeMedia(context).width,
+                      height: sizeMedia(context).height,
+                      child: Center(child: customCircularProgress()));
+            },
+          )
       ),
     );
   }

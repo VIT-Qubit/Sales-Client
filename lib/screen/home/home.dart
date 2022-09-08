@@ -1,11 +1,9 @@
 import 'dart:async';
-
+import 'package:client/apis/homeapi.dart';
 import 'package:client/helpers/headers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_switch/flutter_switch.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:location/location.dart';
 
 class HomePage extends StatefulWidget {
   static const routeName = homePageRoute;
@@ -18,20 +16,32 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
 
-  bool onTask = true;
+  bool onTask = false;
   bool onDuty = true;
 
 Completer<GoogleMapController> _controller = Completer();
 
-  static const LatLng _center = const LatLng(45.521563, -122.677433);
+  static const LatLng _center = const LatLng(13.0382, 80.1565);
 
   final Set<Marker> _markers = {};
   final List<dynamic> _markersData = [
     {
-      "lat": 45.521563,
-      "lng": -122.677433,
+      "lat": 13.0382,
+      "lng": 80.1565,
       "title" : "Aravind S",
       "type" : "Emi"
+    },
+    {
+      "lat": 13.0473,
+      "lng": 80.0945,
+      "title" : "Karthi S",
+      "type" : "Loan"
+    },
+    {
+      "lat": 13.0500,
+      "lng": 80.2121,
+      "title" : "Santhosh A",
+      "type" : "Loan"
     },
   ];
 
@@ -55,8 +65,19 @@ Completer<GoogleMapController> _controller = Completer();
     _controller.complete(controller);
   }
   
+    _receiveHomeScreen() async {
+    return await HomeScreenAPI().getHomeScreen(context: context);
+  }
+
+  _updateStatus({required String type}) async {
+    return await HomeScreenAPI().postStatus(context: context, type: type);
+  }
+
   @override
   void initState() {
+    super.initState();
+    homeFutures = _receiveHomeScreen();
+    print("--------calling-------");
     for (var i = 0; i < _markersData.length; i++) {
       print("======================");
       print(_markersData[i]);
@@ -75,10 +96,15 @@ Completer<GoogleMapController> _controller = Completer();
 
   @override
   Widget build(BuildContext context) {
+    var size = sizeMedia(context);
     return SafeArea(
       child: Scaffold(
         resizeToAvoidBottomInset: true,
-        body: Stack(
+        body: FutureBuilder(
+          future: homeFutures,
+          builder: (BuildContext context,AsyncSnapshot snapshot){
+            if(snapshot.hasData){
+              return Stack(
           children: [
             GoogleMap(
                 onMapCreated: _onMapCreated,
@@ -91,10 +117,26 @@ Completer<GoogleMapController> _controller = Completer();
                 onCameraMove: _onCameraMove,
               ),
             //buildMap(),
-            dutyStatusBar(onTask: onTask,status: onDuty ),
-            onTask != true ? todayEarnings() : assignedOrder()
+            dutyStatusBar(onTask: onTask,status: snapshot.data['online'] ?? false ),
+            snapshot.data['online'] != true ? todayEarnings(
+              statusData: snapshot.data['status_data']
+            ) : assignedOrder(
+              ordersData: snapshot.data['Data']
+            )
           ],
-        ),
+        );
+            }else if (snapshot.hasError) {
+                    return defaultErrordialog(
+                        context: context,
+                        errorCode: ES_0060,
+                        message: "Something went wrong.Try again Later");
+                  }   return SizedBox(
+                      width: size.width,
+                      height: size.height,
+                      child: Center(child: customCircularProgress()));
+            
+          },
+        )
       ),
     );
   }
@@ -146,6 +188,7 @@ Completer<GoogleMapController> _controller = Completer();
                    return  status != true ? singleButtonCustomDialog(
                       title: "Yah! Ready to go", context: context,
                       onPressed: (){
+                        _updateStatus(type: "online");
                         setState(() {
                           onDuty = true;
                         });
@@ -154,6 +197,7 @@ Completer<GoogleMapController> _controller = Completer();
                       : singleButtonCustomDialog(
                       title: "Are you sure you want to go off?", context: context,
                       onPressed: (){
+                        _updateStatus(type: "offline");
                         setState(() {
                           onDuty = false;
                         });
@@ -179,7 +223,7 @@ Completer<GoogleMapController> _controller = Completer();
   }
 
   /// Todays Earning Stats
-  Widget todayEarnings(){
+  Widget todayEarnings({required Map<dynamic,dynamic> statusData}){
     var size = sizeMedia(context);
     return Align(
       alignment: Alignment.bottomCenter,
@@ -203,10 +247,9 @@ Completer<GoogleMapController> _controller = Completer();
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                customVerticalIconTitle(context: context, subtitle: "10", icon: Icons.receipt_long),
-                customVerticalIconTitle(context: context, subtitle: "4", icon: Icons.task_alt ),
-                customVerticalIconTitle(context: context, subtitle: "6", icon: Icons.pending ),
-                
+                customVerticalIconTitle(context: context, subtitle: statusData['total'].toString(), icon: Icons.receipt_long),
+                customVerticalIconTitle(context: context, subtitle: statusData['completed'].toString(), icon: Icons.task_alt ),
+                customVerticalIconTitle(context: context, subtitle: statusData['remaining'].toString(), icon: Icons.pending ),
               ],
             )
           ],
@@ -216,7 +259,7 @@ Completer<GoogleMapController> _controller = Completer();
   }
 
   /// Assigned Order Details
-  Widget assignedOrder(){
+  Widget assignedOrder({required List<dynamic> ordersData}){
     var size = sizeMedia(context);
     return GestureDetector(
       onTap: (){
@@ -237,7 +280,7 @@ Completer<GoogleMapController> _controller = Completer();
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("Task ID : #12345678901",style:  mediumTextStyle(context).copyWith(color:kDarkSlateGray),),
+              Text("Task ID : #${ordersData[0]['id']}",style:  mediumTextStyle(context).copyWith(color:kDarkSlateGray),),
               smallCustomSizedBox(context),
               kSmallDivider(context),
               smallCustomSizedBox(context),
@@ -250,7 +293,7 @@ Completer<GoogleMapController> _controller = Completer();
                    children: [
                     Text("2.3 km",style: mediumTextStyle(context),),
                     Text("40 mins",style: mediumTextStyle(context)),
-                    Text("Pending",style:mediumTextStyle(context)),
+                    Text(ordersData[0]['completed'] == true ? "Completed" : "Pending",style:mediumTextStyle(context)),
                  ],
                  ),
                 smallCustomSizedBox(context),

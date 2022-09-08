@@ -4,7 +4,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 Dio dio = Dio();
 
-final flutterSecureStorage =  FlutterSecureStorage();
+final flutterSecureStorage =  new FlutterSecureStorage();
 
 //BaseOptions
 Options dioOptions =  Options(

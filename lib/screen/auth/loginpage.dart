@@ -5,6 +5,7 @@ import 'package:client/helpers/headers.dart';
 import 'package:otp_text_field/otp_field.dart';
 import 'package:otp_text_field/otp_field_style.dart';
 import 'package:otp_text_field/style.dart';
+
 class LoginPage extends StatefulWidget {
   static const routeName = loginPageRoute;
   const LoginPage({ Key? key }) : super(key: key);
@@ -39,7 +40,7 @@ class _LoginPageState extends State<LoginPage> {
         });
       }else{
         setState(() {
-          _smsCode = response['RESPONSE']['code'];
+          _smsCode = response['code'];
         });
       }
       Loader.hide();

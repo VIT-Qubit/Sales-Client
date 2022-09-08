@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:client/apis/liveapi.dart';
 import 'package:client/helpers/headers.dart';
 import 'package:client/screen/analysis/analysis.dart';
 import 'package:client/screen/auth/loginpage.dart';
@@ -11,6 +12,7 @@ import 'package:client/screen/records/recordsindetail.dart';
 import 'package:client/screen/records/recordspage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
@@ -29,12 +31,29 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+    final _flutterSecureStorage = const FlutterSecureStorage();
+  
+  @override
+    void initState() {
+      super.initState();
+      Timer(const Duration(seconds: 5), () async{
+          getLiveLocation();
+      });
+      getStoredAccessTokenOrEmpty;
+    }   
 
+  Future<String> get getStoredAccessTokenOrEmpty async {
+    var _userBearerToken = await _flutterSecureStorage.read(key: "BEARERTOKEN");
+    if(_userBearerToken == null) return "";
+    return _userBearerToken;
+  }
+  
 //Get Location
   late LocationData _currentPosition;
   Location location = Location();
 
   getLiveLocation() async{
+    
     bool _serviceEnabled;
     PermissionStatus _permissionGranted;
 
@@ -56,13 +75,10 @@ class _MyAppState extends State<MyApp> {
 
     _currentPosition = await location.getLocation();
     print(_currentPosition);
+    //Sending Live Location to server
+    await LiveScreenAPI().updateLiveLocation(context: context, lat: _currentPosition.latitude.toString(), lon: _currentPosition.longitude.toString());
   }
 
-  @override
-  void initState() {
-    super.initState();
-    getLiveLocation();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +88,17 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         primaryColor: kPrimaryColor,
       ),
-      home: const MapsPage(),
+home:FutureBuilder(
+        future: getStoredAccessTokenOrEmpty,
+        builder: (context,snapshot) {
+           if(!snapshot.hasData) return customCircularProgress() ;
+          if(snapshot.data != ""){
+            return const AppScreenController() ;
+          }else{
+          return LoginPage();
+          }
+        },
+      ),
       routes: {
         AppScreenController.routeName: (context) =>
             const AppScreenController(), // Path :  /appcontroller
@@ -82,7 +108,7 @@ class _MyAppState extends State<MyApp> {
         AnalysisPage.routeName: (context) => const AnalysisPage(),
         RecordsPage.routeName: (context) => const RecordsPage(),
         RecordsInDetailsPage.routeName: (context) =>
-            const RecordsInDetailsPage(),
+            const RecordsInDetailsPage(ticket_id: "",),
         ReferralCode.routeName: (context) => const ReferralCode(),
       },
     );

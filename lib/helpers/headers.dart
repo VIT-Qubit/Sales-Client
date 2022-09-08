@@ -13,3 +13,5 @@ export 'package:client/helpers/diooptions.dart';
 export 'package:client/helpers/endpoints.dart';
 export 'package:dio/dio.dart';
 export 'package:flutter_overlay_loader/flutter_overlay_loader.dart';
+export 'package:client/helpers/futures.dart';
+export 'package:client/helpers/errorcodes.dart';

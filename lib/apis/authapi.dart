@@ -1,5 +1,7 @@
 import 'package:client/helpers/headers.dart';
 import 'package:client/screen/auth/loginpage.dart';
+import 'package:client/screen/components/appscreencontroller.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 
 
@@ -8,7 +10,7 @@ class AuthenticationAPI {
   //Dio dio = new Dio(dioOptions);
   postLoginUser({required BuildContext context,required String phonenumber}) async {
     FormData data = FormData.fromMap({
-      "number": phonenumber,
+      "mobilenumber": phonenumber,
     });
 
     try {
@@ -37,14 +39,15 @@ class AuthenticationAPI {
       required String otp,
       required String code}) async {
     FormData data = FormData.fromMap({"otp": otp, "code": code});
-
+final _flutterSecureStorage =  FlutterSecureStorage();
     try {
-      Response response = await dio.post(VERIFY_OTP,options : dioOptions,data : data);
+      Response response = await dio.post(VERIFY_OTP_URL,options : dioOptions,data : data);
       if(response.statusCode == 200) {
-        var bearerToken = response.data['BODY']['token'];
-        await flutterSecureStorage.write(key: "BEARERTOKEN", value: bearerToken);
+        print(response.data);
+        var bearerToken = response.data['token'];
+        await _flutterSecureStorage.write(key: "BEARERTOKEN", value: bearerToken);
         Loader.hide();
-        return Navigator.pushReplacement(context, CustomSimplePageRoute(page: const AppScreenController(indexScreen: 0), routeName: appcontroller));
+        return Navigator.pushReplacement(context, CustomSimplePageRoute(page: const AppScreenController(), routeName: appControllerRoute));
       }
     } on DioError catch (e) {
       if (e.response?.statusCode == 400) {

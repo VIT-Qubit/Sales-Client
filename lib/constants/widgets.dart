@@ -546,7 +546,7 @@ Widget textBtn(context, String title,
 }
 
 isEmptyOrNull(var x) {
-  if ((x.toString().isEmpty) || (x == null)) {
+  if ((x.toString().isEmpty) || (x == null) || (x.toString() == "") || (x.toString() == " ") ){
     return true;
   } else {
     return false;
